@@ -79,6 +79,10 @@ export default function Enquiries() {
           ]} />
           <Filter label="Type" value={fType} onChange={setFType} options={[{ v: "all", l: "Any type" }, ...eventTypes.map((t) => ({ v: t, l: t }))]} />
           <Filter label="Assignee" value={fAssignee} onChange={setFAssignee} options={[{ v: "all", l: "Any assignee" }, ...team.map((t) => ({ v: t.id, l: t.name }))]} />
+          <Filter label="Submitted" value={fSubmitted} onChange={setFSubmitted} options={[
+            { v: "all", l: "Any time" }, { v: "today", l: "Last 24 hours" }, { v: "7d", l: "Last 7 days" },
+            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" },
+          ]} />
         </div>
       </div>
 
