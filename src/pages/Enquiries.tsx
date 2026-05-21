@@ -215,13 +215,27 @@ export default function Enquiries() {
   );
 }
 
-function Filter({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { v: string; l: string }[] }) {
+function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-9 w-auto min-w-[140px] text-xs">
-        <span className="mr-1 text-muted-foreground">{label}:</span><SelectValue />
-      </SelectTrigger>
-      <SelectContent>{options.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}</SelectContent>
-    </Select>
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function DatePickerField({ value, onChange }: { value: Date | undefined; onChange: (d: Date | undefined) => void }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className={cn("h-9 w-full justify-start text-xs font-normal", !value && "text-muted-foreground")}>
+          <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+          {value ? format(value, "LLL d, y") : "Pick date"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar mode="single" selected={value} onSelect={onChange} initialFocus className={cn("p-3 pointer-events-auto")} />
+      </PopoverContent>
+    </Popover>
   );
 }
