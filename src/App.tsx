@@ -6,10 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "./pages/Dashboard.tsx";
 import Inventory from "./pages/Inventory.tsx";
 import Enquiries from "./pages/Enquiries.tsx";
-import Reports from "./pages/Reports.tsx";
-import Notifications from "./pages/Notifications.tsx";
-import Settings from "./pages/Settings.tsx";
-import Login from "./pages/Login.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,10 +20,6 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/enquiries" element={<Enquiries />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
