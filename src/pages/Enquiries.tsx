@@ -37,13 +37,17 @@ export default function Enquiries() {
     if (fStatus !== "all" && e.status !== fStatus) return false;
     if (fType !== "all" && e.eventType !== fType) return false;
     if (fAssignee !== "all" && e.assignedTo !== fAssignee) return false;
-    if (fSubmitted !== "all") {
+    if (fSubmitted === "custom") {
+      const t = new Date(e.submittedAt).getTime();
+      if (fSubmittedRange?.from && t < fSubmittedRange.from.setHours(0, 0, 0, 0)) return false;
+      if (fSubmittedRange?.to && t > fSubmittedRange.to.setHours(23, 59, 59, 999)) return false;
+    } else if (fSubmitted !== "all") {
       const days = fSubmitted === "today" ? 1 : fSubmitted === "7d" ? 7 : fSubmitted === "30d" ? 30 : 90;
       const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
       if (new Date(e.submittedAt).getTime() < cutoff) return false;
     }
     return true;
-  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted]);
+  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted, fSubmittedRange]);
 
   const kpis = useMemo(() => ([
     { icon: Inbox, label: "Total", value: data.length },
