@@ -8,9 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 import { adminEnquiries, AdminEnquiry, EnquiryStatus, ENQUIRY_STATUS_LABEL } from "@/data/admin-enquiries";
 import { tenants, team } from "@/data/admin-tenants";
-import { Inbox, Loader2, FileText, CheckCircle2, XCircle, Clock, Search } from "lucide-react";
+import { Inbox, Loader2, FileText, CheckCircle2, XCircle, Clock, Search, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { toast } from "sonner";
 import type { NotificationItem } from "@/data/portfolio";
 
@@ -22,6 +27,7 @@ export default function Enquiries() {
   const [fType, setFType] = useState("all");
   const [fAssignee, setFAssignee] = useState("all");
   const [fSubmitted, setFSubmitted] = useState("all");
+  const [fSubmittedRange, setFSubmittedRange] = useState<DateRange | undefined>(undefined);
   const [open, setOpen] = useState<AdminEnquiry | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -31,13 +37,17 @@ export default function Enquiries() {
     if (fStatus !== "all" && e.status !== fStatus) return false;
     if (fType !== "all" && e.eventType !== fType) return false;
     if (fAssignee !== "all" && e.assignedTo !== fAssignee) return false;
-    if (fSubmitted !== "all") {
+    if (fSubmitted === "custom") {
+      const t = new Date(e.submittedAt).getTime();
+      if (fSubmittedRange?.from && t < fSubmittedRange.from.setHours(0, 0, 0, 0)) return false;
+      if (fSubmittedRange?.to && t > fSubmittedRange.to.setHours(23, 59, 59, 999)) return false;
+    } else if (fSubmitted !== "all") {
       const days = fSubmitted === "today" ? 1 : fSubmitted === "7d" ? 7 : fSubmitted === "30d" ? 30 : 90;
       const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
       if (new Date(e.submittedAt).getTime() < cutoff) return false;
     }
     return true;
-  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted]);
+  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted, fSubmittedRange]);
 
   const kpis = useMemo(() => ([
     { icon: Inbox, label: "Total", value: data.length },
@@ -81,8 +91,23 @@ export default function Enquiries() {
           <Filter label="Assignee" value={fAssignee} onChange={setFAssignee} options={[{ v: "all", l: "Any assignee" }, ...team.map((t) => ({ v: t.id, l: t.name }))]} />
           <Filter label="Submitted" value={fSubmitted} onChange={setFSubmitted} options={[
             { v: "all", l: "Any time" }, { v: "today", l: "Last 24 hours" }, { v: "7d", l: "Last 7 days" },
-            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" },
+            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" }, { v: "custom", l: "Custom range" },
           ]} />
+          {fSubmitted === "custom" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn("h-9 text-xs font-normal", !fSubmittedRange?.from && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {fSubmittedRange?.from ? (
+                    fSubmittedRange.to ? `${format(fSubmittedRange.from, "LLL d")} – ${format(fSubmittedRange.to, "LLL d, y")}` : format(fSubmittedRange.from, "LLL d, y")
+                  ) : "Pick a range"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="range" selected={fSubmittedRange} onSelect={setFSubmittedRange} numberOfMonths={2} initialFocus className={cn("p-3 pointer-events-auto")} />
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
 
