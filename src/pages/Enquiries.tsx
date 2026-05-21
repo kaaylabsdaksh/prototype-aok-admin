@@ -27,6 +27,7 @@ export default function Enquiries() {
   const [fType, setFType] = useState("all");
   const [fAssignee, setFAssignee] = useState("all");
   const [fSubmitted, setFSubmitted] = useState("all");
+  const [fSubmittedRange, setFSubmittedRange] = useState<DateRange | undefined>(undefined);
   const [open, setOpen] = useState<AdminEnquiry | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
