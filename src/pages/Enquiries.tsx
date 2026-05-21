@@ -21,6 +21,7 @@ export default function Enquiries() {
   const [fStatus, setFStatus] = useState("all");
   const [fType, setFType] = useState("all");
   const [fAssignee, setFAssignee] = useState("all");
+  const [fSubmitted, setFSubmitted] = useState("all");
   const [open, setOpen] = useState<AdminEnquiry | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -30,8 +31,13 @@ export default function Enquiries() {
     if (fStatus !== "all" && e.status !== fStatus) return false;
     if (fType !== "all" && e.eventType !== fType) return false;
     if (fAssignee !== "all" && e.assignedTo !== fAssignee) return false;
+    if (fSubmitted !== "all") {
+      const days = fSubmitted === "today" ? 1 : fSubmitted === "7d" ? 7 : fSubmitted === "30d" ? 30 : 90;
+      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+      if (new Date(e.submittedAt).getTime() < cutoff) return false;
+    }
     return true;
-  }), [data, search, fTenant, fStatus, fType, fAssignee]);
+  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted]);
 
   const kpis = useMemo(() => ([
     { icon: Inbox, label: "Total", value: data.length },
@@ -73,6 +79,10 @@ export default function Enquiries() {
           ]} />
           <Filter label="Type" value={fType} onChange={setFType} options={[{ v: "all", l: "Any type" }, ...eventTypes.map((t) => ({ v: t, l: t }))]} />
           <Filter label="Assignee" value={fAssignee} onChange={setFAssignee} options={[{ v: "all", l: "Any assignee" }, ...team.map((t) => ({ v: t.id, l: t.name }))]} />
+          <Filter label="Submitted" value={fSubmitted} onChange={setFSubmitted} options={[
+            { v: "all", l: "Any time" }, { v: "today", l: "Last 24 hours" }, { v: "7d", l: "Last 7 days" },
+            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" },
+          ]} />
         </div>
       </div>
 
