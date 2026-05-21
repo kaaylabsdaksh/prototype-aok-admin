@@ -75,23 +75,32 @@ export default function Enquiries() {
       <PageHeader title="Enquiries" subtitle="Route, assign and progress enquiries across all tenants." />
       <KpiStrip items={kpis} />
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card px-3 py-2">
+        <div
+          className={`flex items-center rounded-full transition-all duration-300 ease-out ${
+            searchOpen || search ? "flex-1 bg-secondary/60 px-3" : "w-10 cursor-pointer justify-center hover:bg-secondary/60"
+          } h-10`}
+          onClick={() => !searchOpen && setSearchOpen(true)}
+        >
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <Input
+            ref={searchInputRef}
             placeholder="Search by ref, tenant, brief…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 rounded-full border-border/60 bg-card pl-11 shadow-sm"
+            onBlur={() => { if (!search) setSearchOpen(false); }}
+            className={`h-9 border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${
+              searchOpen || search ? "ml-2 flex-1 w-full px-0 opacity-100" : "w-0 p-0 opacity-0 pointer-events-none"
+            }`}
           />
         </div>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-11 rounded-full border-border/60 bg-card px-5 shadow-sm">
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
+            <Button variant="outline" size="sm" className="ml-auto gap-1.5 rounded-full">
+              <SlidersHorizontal className="h-3.5 w-3.5" />
               Filters
               {activeFilterCount > 0 && (
-                <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-medium text-primary-foreground">
+                <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-medium text-primary-foreground">
                   {activeFilterCount}
                 </span>
               )}
