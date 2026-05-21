@@ -91,8 +91,23 @@ export default function Enquiries() {
           <Filter label="Assignee" value={fAssignee} onChange={setFAssignee} options={[{ v: "all", l: "Any assignee" }, ...team.map((t) => ({ v: t.id, l: t.name }))]} />
           <Filter label="Submitted" value={fSubmitted} onChange={setFSubmitted} options={[
             { v: "all", l: "Any time" }, { v: "today", l: "Last 24 hours" }, { v: "7d", l: "Last 7 days" },
-            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" },
+            { v: "30d", l: "Last 30 days" }, { v: "90d", l: "Last 90 days" }, { v: "custom", l: "Custom range" },
           ]} />
+          {fSubmitted === "custom" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn("h-9 text-xs font-normal", !fSubmittedRange?.from && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {fSubmittedRange?.from ? (
+                    fSubmittedRange.to ? `${format(fSubmittedRange.from, "LLL d")} – ${format(fSubmittedRange.to, "LLL d, y")}` : format(fSubmittedRange.from, "LLL d, y")
+                  ) : "Pick a range"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="range" selected={fSubmittedRange} onSelect={setFSubmittedRange} numberOfMonths={2} initialFocus className={cn("p-3 pointer-events-auto")} />
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
 
