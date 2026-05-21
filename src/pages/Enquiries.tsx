@@ -21,6 +21,9 @@ import type { NotificationItem } from "@/data/portfolio";
 export default function Enquiries() {
   const [data, setData] = useState<AdminEnquiry[]>(adminEnquiries);
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (searchOpen) searchInputRef.current?.focus(); }, [searchOpen]);
   const [fTenant, setFTenant] = useState("all");
   const [fStatus, setFStatus] = useState("all");
   const [fType, setFType] = useState("all");
