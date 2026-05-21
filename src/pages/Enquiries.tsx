@@ -26,8 +26,8 @@ export default function Enquiries() {
   const [fStatus, setFStatus] = useState("all");
   const [fType, setFType] = useState("all");
   const [fAssignee, setFAssignee] = useState("all");
-  const [fSubmitted, setFSubmitted] = useState("all");
-  const [fSubmittedRange, setFSubmittedRange] = useState<DateRange | undefined>(undefined);
+  const [fFrom, setFFrom] = useState<Date | undefined>(undefined);
+  const [fTo, setFTo] = useState<Date | undefined>(undefined);
   const [open, setOpen] = useState<AdminEnquiry | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -37,17 +37,14 @@ export default function Enquiries() {
     if (fStatus !== "all" && e.status !== fStatus) return false;
     if (fType !== "all" && e.eventType !== fType) return false;
     if (fAssignee !== "all" && e.assignedTo !== fAssignee) return false;
-    if (fSubmitted === "custom") {
-      const t = new Date(e.submittedAt).getTime();
-      if (fSubmittedRange?.from && t < fSubmittedRange.from.setHours(0, 0, 0, 0)) return false;
-      if (fSubmittedRange?.to && t > fSubmittedRange.to.setHours(23, 59, 59, 999)) return false;
-    } else if (fSubmitted !== "all") {
-      const days = fSubmitted === "today" ? 1 : fSubmitted === "7d" ? 7 : fSubmitted === "30d" ? 30 : 90;
-      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
-      if (new Date(e.submittedAt).getTime() < cutoff) return false;
-    }
+    const t = new Date(e.submittedAt).getTime();
+    if (fFrom && t < new Date(fFrom.getFullYear(), fFrom.getMonth(), fFrom.getDate()).getTime()) return false;
+    if (fTo && t > new Date(fTo.getFullYear(), fTo.getMonth(), fTo.getDate(), 23, 59, 59, 999).getTime()) return false;
     return true;
-  }), [data, search, fTenant, fStatus, fType, fAssignee, fSubmitted, fSubmittedRange]);
+  }), [data, search, fTenant, fStatus, fType, fAssignee, fFrom, fTo]);
+
+  const activeFilterCount = [fTenant !== "all", fStatus !== "all", fType !== "all", fAssignee !== "all", !!fFrom, !!fTo].filter(Boolean).length;
+  const clearFilters = () => { setFTenant("all"); setFStatus("all"); setFType("all"); setFAssignee("all"); setFFrom(undefined); setFTo(undefined); };
 
   const kpis = useMemo(() => ([
     { icon: Inbox, label: "Total", value: data.length },
