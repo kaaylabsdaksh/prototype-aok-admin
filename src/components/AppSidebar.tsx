@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Boxes, Settings, Inbox, Headphones, LogOut, ChevronsLeft, ChevronsRight, Bell, FileBarChart2 } from "lucide-react";
+import { LayoutDashboard, Boxes, Inbox, Headphones, ChevronsLeft, ChevronsRight } from "lucide-react";
 import logo from "@/assets/aok-logo.png";
 import {
   Sidebar,
@@ -20,14 +20,10 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Inventory", url: "/inventory", icon: Boxes },
   { title: "Enquiries", url: "/enquiries", icon: Inbox },
-  { title: "Reports", url: "/reports", icon: FileBarChart2 },
-  { title: "Notifications", url: "/notifications", icon: Bell },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 const bottomItems = [
   { title: "Support", url: "/support", icon: Headphones },
-  { title: "Log out", url: "/login", icon: LogOut },
 ];
 
 export function AppSidebar() {
